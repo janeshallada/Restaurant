@@ -1,0 +1,196 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+body {
+  margin: 0;
+  background-color: #f9f9f9;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.cart-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.cart-icon-wrapper {
+  position: relative;
+}
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #f1c40f;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Tabs (Slidable) */
+.tabs-container {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-x: auto; /* Enables sliding */
+  border-bottom: 1px solid #e0e0e0;
+  background: white;
+  white-space: nowrap; /* Prevents wrapping */
+}
+.tab-item {
+  padding: 15px 20px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+.tab-item.active {
+  border-bottom: 3px solid #ff0000;
+  color: #ff0000;
+}
+.tab-button {
+  border: none;
+  background: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Dish List */
+.dishes-container {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+.dish-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+  background: white;
+  border-bottom: 1px solid #dcdcdc;
+  margin-bottom: 2px;
+}
+
+/* Dish Left Side */
+.dish-details-side {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+.veg-border {
+  width: 16px;
+  height: 16px;
+  border: 2px solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.veg-border.veg {
+  border-color: green;
+}
+.veg-border.non-veg {
+  border-color: red;
+}
+.veg-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.veg-dot.veg {
+  background-color: green;
+}
+.veg-dot.non-veg {
+  background-color: red;
+}
+
+.dish-info h1 {
+  font-size: 18px;
+  margin: 0 0 5px 0;
+}
+.dish-currency {
+  font-weight: bold;
+  margin: 5px 0;
+}
+.dish-description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+.customization-text {
+  color: #3b82f6;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.not-available {
+  color: red;
+  font-size: 14px;
+}
+
+/* Controller (+ -) */
+.controller-container {
+  display: flex;
+  align-items: center;
+  background-color: #013e27;
+  border-radius: 20px;
+  width: fit-content;
+  padding: 0 5px;
+  color: white;
+}
+.control-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.quantity {
+  margin: 0 10px;
+  font-weight: bold;
+}
+
+/* Dish Right Side */
+.dish-image-side {
+  text-align: right;
+  margin-left: 10px;
+}
+.dish-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+.calories {
+  color: #f59e0b;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
+  margin-top: 0;
+}
