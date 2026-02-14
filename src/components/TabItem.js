@@ -1,12 +1,24 @@
-const TabItem = ({details, isActive, clickTab}) => {
-  const menuCategoryId = details.menu_category_id || details.menuCategoryId
-  const menuCategory = details.menu_category || details.menuCategory
+const TabItem = props => {
+  const {tabDetails, isActive, onClickTab} = props
+
+  if (!tabDetails) {
+    return null
+  }
+
+  const menuCategoryId =
+    tabDetails.menu_category_id || tabDetails.menuCategoryId
+
+  const menuCategory = tabDetails.menu_category || tabDetails.menuCategory
 
   const activeClass = isActive ? 'tab-item active' : 'tab-item'
 
+  const onClick = () => {
+    onClickTab(menuCategoryId)
+  }
+
   return (
-    <li className={activeClass} onClick={() => clickTab(menuCategoryId)}>
-      <button type="button" className="tab-button">
+    <li className={activeClass}>
+      <button type="button" className="tab-button" onClick={onClick}>
         {menuCategory}
       </button>
     </li>

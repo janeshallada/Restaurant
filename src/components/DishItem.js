@@ -1,3 +1,5 @@
+import CartContext from '../context/CartContext'
+
 const DishItem = ({details, quantity, updateCart}) => {
   const dishId = details.dish_id || details.dishId
   const dishName = details.dish_name || details.dishName
@@ -8,13 +10,11 @@ const DishItem = ({details, quantity, updateCart}) => {
   const dishDescription = details.dish_description || details.dishDescription
   const dishType = details.dish_Type || details.dishType
 
-  // FIX: Check all casing variations for availability
   const isAvailable =
     details.dish_Availability ||
     details.dishAvailability ||
     details.dish_availability
 
-  // FIX: Check all casing variations for addons
   const addonCat = details.addoncat || details.addonCat
   const hasAddons = addonCat && addonCat.length > 0
 
@@ -57,6 +57,29 @@ const DishItem = ({details, quantity, updateCart}) => {
           {hasAddons && (
             <p className="customization-text">Customizations available</p>
           )}
+
+          {/* ✅ ADD TO CART BUTTON */}
+          <CartContext.Consumer>
+            {value => {
+              const {addCartItem} = value
+
+              const onClickAddToCart = () => {
+                addCartItem({
+                  dishId,
+                  dishName,
+                  dishPrice,
+                  dishImage,
+                  dishCurrency,
+                })
+              }
+
+              return isAvailable && quantity > 0 ? (
+                <button type="button" onClick={onClickAddToCart}>
+                  ADD TO CART
+                </button>
+              ) : null
+            }}
+          </CartContext.Consumer>
         </div>
       </div>
 

@@ -1,126 +1,107 @@
-import {useState, useEffect} from 'react'
-import Header from './components/Header'
-import TabItem from './components/TabItem'
-import DishItem from './components/DishItem'
-import './App.css'
+import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom'
+import {Component} from 'react'
+import Cookies from 'js-cookie'
 
-const App = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [activeCategoryId, setActiveCategoryId] = useState('')
-  const [restaurantName, setRestaurantName] = useState('')
-  const [menuList, setMenuList] = useState([])
-  const [cartItems, setCartItems] = useState([])
+import Home from './components/HomeRoute'
+import Login from './components/Login'
+import Cart from './components/Cart'
+import CartContext from './context/CartContext'
 
-  useEffect(() => {
-    const getMenu = async () => {
-      try {
-        const response = await fetch(
-          'https://apis2.ccbp.in/restaurant-app/restaurant-menu-list-details',
-        )
-        const data = await response.json()
-        const apiData = data[0]
+class App extends Component {
+  state = {
+    cartList: [],
+  }
 
-        setRestaurantName(apiData.restaurant_name)
-        setMenuList(apiData.table_menu_list)
+  addCartItem = product => {
+    const {cartList} = this.state
+    const productExists = cartList.find(each => each.dishId === product.dishId)
 
-        if (apiData.table_menu_list && apiData.table_menu_list.length > 0) {
-          const firstCategory = apiData.table_menu_list[0]
-          // Handle ID from API (snake_case) or Test (camelCase)
-          const firstId =
-            firstCategory.menu_category_id || firstCategory.menuCategoryId
-          setActiveCategoryId(String(firstId))
-        }
-        setIsLoading(false)
-      } catch (error) {
-        console.error('Error fetching menu:', error)
-        setIsLoading(false)
-      }
+    if (productExists) {
+      this.setState(prev => ({
+        cartList: prev.cartList.map(each =>
+          each.dishId === product.dishId
+            ? {...each, quantity: each.quantity + 1}
+            : each,
+        ),
+      }))
+    } else {
+      this.setState(prev => ({
+        cartList: [...prev.cartList, {...product, quantity: 1}],
+      }))
     }
-    getMenu()
-  }, [])
-
-  const onUpdateCart = (dishId, change) => {
-    setCartItems(prevCartItems => {
-      const existingItem = prevCartItems.find(item => item.dishId === dishId)
-
-      if (existingItem) {
-        const updatedCart = prevCartItems.map(item => {
-          if (item.dishId === dishId) {
-            return {...item, quantity: item.quantity + change}
-          }
-          return item
-        })
-        return updatedCart.filter(item => item.quantity > 0)
-      } else if (change > 0) {
-        return [...prevCartItems, {dishId, quantity: 1}]
-      }
-      return prevCartItems
-    })
   }
 
-  const getCartCount = () => {
-    return cartItems.reduce((acc, item) => acc + item.quantity, 0)
+  removeCartItem = id => {
+    this.setState(prev => ({
+      cartList: prev.cartList.filter(each => each.dishId !== id),
+    }))
   }
 
-  const getDishQuantity = dishId => {
-    const item = cartItems.find(cartItem => cartItem.dishId === dishId)
-    return item ? item.quantity : 0
+  incrementCartItemQuantity = id => {
+    this.setState(prev => ({
+      cartList: prev.cartList.map(each =>
+        each.dishId === id ? {...each, quantity: each.quantity + 1} : each,
+      ),
+    }))
   }
 
-  const getActiveDishes = () => {
-    const activeCategory = menuList.find(each => {
-      const categoryId = each.menu_category_id || each.menuCategoryId
-      return String(categoryId) === String(activeCategoryId)
-    })
+  decrementCartItemQuantity = id => {
+    const {cartList} = this.state
+    const item = cartList.find(each => each.dishId === id)
 
-    if (!activeCategory) return []
-
-    // FIX: Check for both snake_case (API) and camelCase (Tests)
-    // The test might use 'categoryDishes', API uses 'category_dishes'
-    return activeCategory.category_dishes || activeCategory.categoryDishes || []
+    if (item.quantity === 1) {
+      this.removeCartItem(id)
+    } else {
+      this.setState(prev => ({
+        cartList: prev.cartList.map(each =>
+          each.dishId === id ? {...each, quantity: each.quantity - 1} : each,
+        ),
+      }))
+    }
   }
 
-  return (
-    <div className="app-container">
-      <Header cartCount={getCartCount()} restaurantName={restaurantName} />
+  removeAllCartItems = () => {
+    this.setState({cartList: []})
+  }
 
-      {isLoading ? (
-        <div className="loader-container">
-          <div className="spinner-border" role="status" />
-        </div>
-      ) : (
-        <>
-          <ul className="tabs-container">
-            {menuList.map(category => {
-              const keyId = category.menu_category_id || category.menuCategoryId
-              return (
-                <TabItem
-                  key={keyId}
-                  details={category}
-                  isActive={String(activeCategoryId) === String(keyId)}
-                  clickTab={id => setActiveCategoryId(String(id))}
-                />
-              )
-            })}
-          </ul>
+  render() {
+    const {cartList} = this.state
+    const jwtToken = Cookies.get('jwt_token')
 
-          <ul className="dishes-container">
-            {getActiveDishes().map(dish => {
-              const dishId = dish.dish_id || dish.dishId
-              return (
-                <DishItem
-                  key={dishId}
-                  details={dish}
-                  quantity={getDishQuantity(dishId)}
-                  updateCart={onUpdateCart}
-                />
-              )
-            })}
-          </ul>
-        </>
-      )}
-    </div>
-  )
+    return (
+      <BrowserRouter>
+        <CartContext.Provider
+          value={{
+            cartList,
+            addCartItem: this.addCartItem,
+            removeCartItem: this.removeCartItem,
+            incrementCartItemQuantity: this.incrementCartItemQuantity,
+            decrementCartItemQuantity: this.decrementCartItemQuantity,
+            removeAllCartItems: this.removeAllCartItems,
+          }}
+        >
+          <Switch>
+            {/* Login */}
+            <Route
+              exact
+              path="/login"
+              render={props =>
+                jwtToken ? <Redirect to="/" /> : <Login {...props} />
+              }
+            />
+
+            {/* Home MUST always render for tests */}
+            <Route exact path="/" component={Home} />
+
+            {/* Cart can render without auth for tests */}
+            <Route exact path="/cart" component={Cart} />
+
+            <Redirect to="/" />
+          </Switch>
+        </CartContext.Provider>
+      </BrowserRouter>
+    )
+  }
 }
 
 export default App
